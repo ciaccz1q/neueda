@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fun Demo Playground</title>
+    <style>
+        :root {
+            --bg-1: #0f172a;
+            --bg-2: #1e293b;
+            --text: #f8fafc;
+            --card: rgba(15, 23, 42, 0.75);
+            --accent: #22d3ee;
+            --accent-2: #f59e0b;
+            --good: #34d399;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Trebuchet MS", "Segoe UI", Tahoma, sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at 20% 20%, #38bdf8 0%, transparent 28%),
+                radial-gradient(circle at 80% 10%, #f59e0b 0%, transparent 22%),
+                radial-gradient(circle at 50% 90%, #34d399 0%, transparent 25%),
+                linear-gradient(140deg, var(--bg-1), var(--bg-2));
+            overflow-x: hidden;
+        }
+
+        .floaters {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .floater {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: drift linear infinite;
+        }
+
+        @keyframes drift {
+            from {
+                transform: translateY(0) scale(1);
+            }
+
+            to {
+                transform: translateY(-120vh) scale(1.25);
+            }
+        }
+
+        main {
+            position: relative;
+            z-index: 1;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(2rem, 4vw, 3.2rem);
+            letter-spacing: 0.03em;
+            text-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            margin-top: 8px;
+            opacity: 0.9;
+        }
+
+        .grid {
+            margin-top: 22px;
+            display: grid;
+            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        }
+
+        .card {
+            background: var(--card);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+            transform: translateY(10px);
+            opacity: 0;
+            animation: rise 650ms ease forwards;
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 120ms;
+        }
+
+        .card:nth-child(3) {
+            animation-delay: 220ms;
+        }
+
+        .card:nth-child(4) {
+            animation-delay: 320ms;
+        }
+
+        @keyframes rise {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .card h2 {
+            margin: 0 0 10px;
+            font-size: 1.15rem;
+        }
+
+        .btn-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        button {
+            border: 0;
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 160ms ease, filter 160ms ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+        }
+
+        .btn-a {
+            background: var(--accent);
+            color: #062f35;
+        }
+
+        .btn-b {
+            background: var(--accent-2);
+            color: #3a2302;
+        }
+
+        .btn-c {
+            background: var(--good);
+            color: #06331f;
+        }
+
+        .output {
+            min-height: 48px;
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .meter {
+            margin-top: 10px;
+            width: 100%;
+            height: 14px;
+            border-radius: 999px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .meter > div {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, #22d3ee, #34d399);
+            transition: width 220ms ease;
+        }
+
+        .pill {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 5px 10px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.12);
+            font-size: 0.9rem;
+        }
+
+        .footer {
+            margin-top: 16px;
+            opacity: 0.8;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            main {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="floaters" id="floaters"></div>
+    <main>
+        <h1>Fun Demo Playground</h1>
+        <p class="subtitle">Tiny interactive page with jokes, sparkles, and a speed-click challenge.</p>
+
+        <section class="grid">
+            <article class="card">
+                <h2>Random Joke</h2>
+                <div class="btn-row">
+                    <button id="jokeBtn" class="btn-a">Tell me a joke</button>
+                </div>
+                <div id="jokeOut" class="output">Press the button for a random one-liner.</div>
+            </article>
+
+            <article class="card">
+                <h2>Theme Shuffle</h2>
+                <div class="btn-row">
+                    <button id="themeBtn" class="btn-b">Shuffle colors</button>
+                </div>
+                <div id="themeOut" class="output">Current vibe: Ocean Night</div>
+            </article>
+
+            <article class="card">
+                <h2>Speed Click Mini-Game</h2>
+                <div class="btn-row">
+                    <button id="startBtn" class="btn-c">Start 5s round</button>
+                    <button id="clickBtn" class="btn-a" disabled>Click!</button>
+                </div>
+                <div id="gameOut" class="output">Start a round and click as fast as you can.</div>
+                <div class="meter">
+                    <div id="timeBar"></div>
+                </div>
+                <span id="scorePill" class="pill">Score: 0</span>
+            </article>
+
+            <article class="card">
+                <h2>Mouse Sparkles</h2>
+                <p>Move your cursor or tap around to spawn sparkles.</p>
+                <div class="output">This is pure front-end fun: no build tools, no libraries, just one HTML file.</div>
+            </article>
+        </section>
+
+        <p class="footer">Made for demos on the fly.</p>
+    </main>
+
+    <script>
+        const jokes = [
+            "I tried to catch fog yesterday. Mist.",
+            "Why do programmers love nature? It has lots of bugs.",
+            "I ate a clock once. It was very time-consuming.",
+            "What did the ocean say to the beach? Nothing, it just waved.",
+            "I told my laptop I needed a break. It said: No problem, I'll go to sleep.",
+            "Why don't skeletons fight each other? They don't have the guts."
+        ];
+
+        const themes = [
+            {
+                name: "Ocean Night",
+                bg1: "#0f172a",
+                bg2: "#1e293b",
+                accent: "#22d3ee",
+                accent2: "#f59e0b",
+                good: "#34d399"
+            },
+            {
+                name: "Sunset Party",
+                bg1: "#3b0764",
+                bg2: "#be185d",
+                accent: "#facc15",
+                accent2: "#fb7185",
+                good: "#4ade80"
+            },
+            {
+                name: "Lime Arcade",
+                bg1: "#052e16",
+                bg2: "#14532d",
+                accent: "#84cc16",
+                accent2: "#2dd4bf",
+                good: "#facc15"
+            }
+        ];
+
+        const jokeBtn = document.getElementById("jokeBtn");
+        const jokeOut = document.getElementById("jokeOut");
+        const themeBtn = document.getElementById("themeBtn");
+        const themeOut = document.getElementById("themeOut");
+        const floaters = document.getElementById("floaters");
+        const startBtn = document.getElementById("startBtn");
+        const clickBtn = document.getElementById("clickBtn");
+        const gameOut = document.getElementById("gameOut");
+        const timeBar = document.getElementById("timeBar");
+        const scorePill = document.getElementById("scorePill");
+
+        let score = 0;
+        let gameActive = false;
+        let gameTimer;
+        let barTimer;
+        let themeIndex = 0;
+
+        function rand(max) {
+            return Math.floor(Math.random() * max);
+        }
+
+        function spawnFloaters(count = 24) {
+            floaters.innerHTML = "";
+            for (let i = 0; i < count; i++) {
+                const b = document.createElement("div");
+                b.className = "floater";
+                const size = 6 + rand(16);
+                b.style.width = `${size}px`;
+                b.style.height = `${size}px`;
+                b.style.left = `${rand(100)}vw`;
+                b.style.top = `${80 + rand(30)}vh`;
+                b.style.background = `hsl(${rand(360)}deg 90% 65%)`;
+                b.style.animationDuration = `${8 + rand(15)}s`;
+                b.style.animationDelay = `${-rand(10)}s`;
+                floaters.appendChild(b);
+            }
+        }
+
+        function spark(x, y) {
+            const s = document.createElement("div");
+            s.className = "floater";
+            s.style.width = "8px";
+            s.style.height = "8px";
+            s.style.left = `${x - 4}px`;
+            s.style.top = `${y - 4}px`;
+            s.style.background = `hsl(${rand(360)}deg 100% 70%)`;
+            s.style.animationDuration = "1.2s";
+            s.style.opacity = "0.9";
+            floaters.appendChild(s);
+            setTimeout(() => s.remove(), 1250);
+        }
+
+        jokeBtn.addEventListener("click", () => {
+            jokeOut.textContent = jokes[rand(jokes.length)];
+            spark(window.innerWidth / 2, 120);
+        });
+
+        themeBtn.addEventListener("click", () => {
+            themeIndex = (themeIndex + 1) % themes.length;
+            const t = themes[themeIndex];
+            document.documentElement.style.setProperty("--bg-1", t.bg1);
+            document.documentElement.style.setProperty("--bg-2", t.bg2);
+            document.documentElement.style.setProperty("--accent", t.accent);
+            document.documentElement.style.setProperty("--accent-2", t.accent2);
+            document.documentElement.style.setProperty("--good", t.good);
+            themeOut.textContent = `Current vibe: ${t.name}`;
+            spawnFloaters();
+        });
+
+        clickBtn.addEventListener("click", () => {
+            if (!gameActive) {
+                return;
+            }
+            score += 1;
+            scorePill.textContent = `Score: ${score}`;
+            spark(rand(window.innerWidth), rand(window.innerHeight));
+        });
+
+        startBtn.addEventListener("click", () => {
+            if (gameActive) {
+                return;
+            }
+            gameActive = true;
+            score = 0;
+            scorePill.textContent = "Score: 0";
+            clickBtn.disabled = false;
+            gameOut.textContent = "Go, go, go!";
+            const duration = 5000;
+            const start = Date.now();
+
+            clearInterval(barTimer);
+            barTimer = setInterval(() => {
+                const elapsed = Date.now() - start;
+                const left = Math.max(0, 100 - (elapsed / duration) * 100);
+                timeBar.style.width = `${left}%`;
+            }, 40);
+
+            clearTimeout(gameTimer);
+            gameTimer = setTimeout(() => {
+                gameActive = false;
+                clickBtn.disabled = true;
+                clearInterval(barTimer);
+                timeBar.style.width = "0%";
+                gameOut.textContent = `Round over! Final score: ${score}`;
+            }, duration);
+        });
+
+        // Mouse and touch sparkle trail for extra visual feedback.
+        window.addEventListener("pointermove", (ev) => {
+            if (Math.random() > 0.7) {
+                spark(ev.clientX, ev.clientY);
+            }
+        });
+
+        spawnFloaters();
+        timeBar.style.width = "100%";
+    </script>
+</body>
+
+</html>
